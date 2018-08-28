@@ -1,0 +1,20 @@
+{
+  "name": "nodejs-master-class",
+  "version": "1.0.0",
+  "description": "The Node.js Master Class",
+  "main": "index.ts",
+  "author": "annus.norbert@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json",
+    "lint:fix": "tslint --fix -p tsconfig.json",
+    "start": "ts-node src/api/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^10.9.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
+  }
+}
