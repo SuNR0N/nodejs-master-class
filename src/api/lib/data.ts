@@ -2,6 +2,11 @@ import fs from 'fs';
 import { promisify } from 'util';
 
 import { environment } from '../config/config';
+import {
+  EntityExistsError,
+  EntityNotFoundError,
+} from './errors';
+import { helpers } from './helpers';
 
 const closeAsync = promisify(fs.close);
 const openAsync = promisify(fs.open);
@@ -11,26 +16,26 @@ const unlinkAsync = promisify(fs.unlink);
 const writeFileAsync = promisify(fs.writeFile);
 
 interface IData {
-  create: (dir: string, file: string, data: any) => Promise<void>;
+  create: (dir: string, file: string, content: any) => Promise<void>;
   delete: (dir: string, file: string) => Promise<void>;
-  read: (dir: string, file: string) => Promise<string | undefined>;
-  update: (dir: string, file: string, data:  any) => Promise<void>;
+  read: (dir: string, file: string) => Promise<any>;
+  update: (dir: string, file: string, content: any) => Promise<void>;
 }
 
-async function createFile(dir: string, file: string, data: any): Promise<void> {
+async function createFile(dir: string, file: string, content: any): Promise<void> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
     const fileDescriptor = await openAsync(filePath, 'wx');
-    const stringData = JSON.stringify(data);
-    await writeFileAsync(fileDescriptor, stringData);
-    return await closeAsync(fileDescriptor)
+    const stringContent = JSON.stringify(content);
+    await writeFileAsync(fileDescriptor, stringContent);
+    return await closeAsync(fileDescriptor);
   } catch (err) {
     const baseMessage = 'Could not create new file';
     switch (err.code) {
       case 'ENOENT':
         throw new Error(`${baseMessage} as it may have a non-existing parent directory`);
       case 'EEXIST':
-        throw new Error(`${baseMessage} as it may already exist`);
+        throw new EntityExistsError(`${baseMessage} as it may already exist`);
       default:
         throw new Error(baseMessage);
     }
@@ -45,41 +50,42 @@ async function deleteFile(dir: string, file: string): Promise<void> {
     const baseMessage = 'Could not delete file';
     switch (err.code) {
       case 'ENOENT':
-        throw new Error(`${baseMessage} as it may not exist`);
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`);
       default:
         throw new Error(baseMessage);
     }
   }
 }
 
-async function readFile(dir: string, file: string): Promise<string | undefined> {
+async function readFile(dir: string, file: string): Promise<any> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
-    return await readFileAsync(filePath, 'utf8');
+    const user = await readFileAsync(filePath, 'utf8');
+    return helpers.parseJSONToObject(user);
   } catch (err) {
     const baseMessage = 'Could not read file';
     switch (err.code) {
       case 'ENOENT':
-        throw new Error(`${baseMessage} as it may not exist`);
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`);
       default:
         throw new Error(baseMessage);
     }
   }
 }
 
-async function updateFile(dir: string, file: string, data: any): Promise<void> {
+async function updateFile(dir: string, file: string, content: any): Promise<void> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
     const fileDescriptor = await openAsync(filePath, 'r+');
-    const stringData = JSON.stringify(data);
+    const stringContent = JSON.stringify(content);
     await truncateAsync(filePath);
-    await writeFileAsync(fileDescriptor, stringData);
+    await writeFileAsync(fileDescriptor, stringContent);
     await closeAsync(fileDescriptor);
   } catch (err) {
     const baseMessage = 'Could not update existing file';
     switch (err.code) {
       case 'ENOENT':
-        throw new Error(`${baseMessage} as it may not exist`);
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`);
       case 'EACCES':
         throw new Error(`${baseMessage} due to lack of permission`);
       default:
@@ -93,4 +99,4 @@ export const data: IData = {
   delete: deleteFile,
   read: readFile,
   update: updateFile,
-}; 
+};

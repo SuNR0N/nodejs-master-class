@@ -1,0 +1,9 @@
+export const MISSING_FIELDS_TO_UPDATE = 'Missing fields to update';
+export const MISSING_REQUIRED_FIELDS = 'Missing required fields';
+export const PASSWORD_HASH_FAILED = "Could not hash the user's password";
+export const UNKNOWN_ERROR = 'An unknown error occurred';
+export const USER_ALREADY_EXISTS = 'A user with that phone number already exists';
+export const USER_CREATION_FAILED = 'Could not create the new user';
+export const USER_DELETION_FAILED = 'Could not delete the specified user';
+export const USER_DOES_NOT_EXIST = 'The specified user does not exist';
+export const USER_UPDATE_FAILED = 'Could not update the specified user';
