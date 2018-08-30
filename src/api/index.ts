@@ -99,6 +99,7 @@ const requestListener = (req: IncomingMessage, res: ServerResponse) => {
 // Define a request router
 const router: { [key: string]: RequestHandler } = {
   ping: handlers.ping,
+  tokens: handlers.tokens,
   users: handlers.users,
 };
 

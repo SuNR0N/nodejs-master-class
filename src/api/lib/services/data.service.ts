@@ -1,12 +1,12 @@
 import fs from 'fs';
 import { promisify } from 'util';
 
-import { environment } from '../config/config';
+import { environment } from '../../config/config';
 import {
   EntityExistsError,
   EntityNotFoundError,
-} from './errors';
-import { helpers } from './helpers';
+} from '../errors';
+import { helpers } from '../helpers';
 
 const closeAsync = promisify(fs.close);
 const openAsync = promisify(fs.open);
@@ -15,7 +15,7 @@ const truncateAsync = promisify(fs.truncate);
 const unlinkAsync = promisify(fs.unlink);
 const writeFileAsync = promisify(fs.writeFile);
 
-interface IData {
+interface IDataService {
   create: (dir: string, file: string, content: any) => Promise<void>;
   delete: (dir: string, file: string) => Promise<void>;
   read: (dir: string, file: string) => Promise<any>;
@@ -94,7 +94,7 @@ async function updateFile(dir: string, file: string, content: any): Promise<void
   }
 }
 
-export const data: IData = {
+export const dataService: IDataService = {
   create: createFile,
   delete: deleteFile,
   read: readFile,

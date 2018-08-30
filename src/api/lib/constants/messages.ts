@@ -1,6 +1,13 @@
 export const MISSING_FIELDS_TO_UPDATE = 'Missing fields to update';
+export const MISSING_OR_INVALID_FIELDS = 'Missing required field(s) or field(s) are invalid';
 export const MISSING_REQUIRED_FIELDS = 'Missing required fields';
 export const PASSWORD_HASH_FAILED = "Could not hash the user's password";
+export const PASSWORD_MISMATCH = "Password did not match the specified user's store password";
+export const TOKEN_CANNOT_BE_EXTENDED = 'The token has already expired and cannot be extended';
+export const TOKEN_CREATION_FAILED = 'Could not create the new token';
+export const TOKEN_DELETION_FAILED = 'Could not delete the specified token';
+export const TOKEN_DOES_NOT_EXIST = 'The specified token does not exist';
+export const TOKEN_UPDATE_FAILED = 'Could not extend the specified token';
 export const UNKNOWN_ERROR = 'An unknown error occurred';
 export const USER_ALREADY_EXISTS = 'A user with that phone number already exists';
 export const USER_CREATION_FAILED = 'Could not create the new user';

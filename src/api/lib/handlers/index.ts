@@ -4,6 +4,7 @@ import {
   IResponseData,
 } from '../interfaces';
 import { commonHandlers } from './common.handlers';
+import { tokensHandlers } from './tokens.handlers';
 import { RequestHandler } from './types';
 import { usersHandlers } from './users.handlers';
 
@@ -11,7 +12,22 @@ interface IRequestHandlers {
   [key: string]: RequestHandler;
   notFound: RequestHandler;
   ping: RequestHandler;
+  tokens: RequestHandler;
   users: RequestHandler;
+}
+
+async function tokens(requestData: IRequestData): Promise<IResponseData> {
+  const acceptableMethods = [
+    'DELETE',
+    'GET',
+    'POST',
+    'PUT',
+  ];
+  if (acceptableMethods.indexOf(requestData.method) !== -1) {
+    return await tokensHandlers[requestData.method](requestData);
+  } else {
+    throw new HTTPError(405);
+  }
 }
 
 async function users(requestData: IRequestData): Promise<IResponseData> {
@@ -31,5 +47,6 @@ async function users(requestData: IRequestData): Promise<IResponseData> {
 export const handlers: IRequestHandlers = {
   notFound: commonHandlers.notFound,
   ping: commonHandlers.ping,
+  tokens,
   users,
 };

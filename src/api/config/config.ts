@@ -2,32 +2,39 @@ import { join } from 'path';
 
 interface IEnvironmentConfig {
   dataDir: string;
+  envName: string;
   hashingSecret: string;
   httpPort: number;
   httpsPort: number;
-  envName: string;
+  tokenName: string;
+  tokenValidity: number;
 }
 
 // Container for environments
 const environments: { [key: string]: IEnvironmentConfig } = {};
 
+const baseConfig: Partial<IEnvironmentConfig> = {
+  dataDir: join(__dirname, '/../.data'),
+  hashingSecret: 's3cr37',
+  tokenName: 'token',
+  tokenValidity: 1000 * 60 * 60,
+};
+
 // Staging (default) environment
 environments.staging = {
-  dataDir: join(__dirname, '/../.data'),
+  ...baseConfig,
   envName: 'staging',
-  hashingSecret: 's3cr37',
   httpPort: 3000,
   httpsPort: 3001,
-};
+} as IEnvironmentConfig;
 
 // Production environment
 environments.production = {
-  dataDir: join(__dirname, '/../.data'),
+  ...baseConfig,
   envName: 'production',
-  hashingSecret: 's3cr37',
   httpPort: 5000,
   httpsPort: 5001,
-};
+} as IEnvironmentConfig;
 
 // Determine which environment was passed as a command-line argument
 const currentEnvironment = typeof(process.env.NODE_ENV) === 'string' ?
