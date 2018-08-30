@@ -1,3 +1,7 @@
+import { environment } from '../../config/config';
+
+export const CHECK_CREATION_FAILED = 'Could not create the new check';
+export const MAX_CHECKS_REACHED = `The user already has the maximum number of checks (${environment.maxChecks})`;
 export const MISSING_FIELDS_TO_UPDATE = 'Missing fields to update';
 export const MISSING_OR_INVALID_FIELDS = 'Missing required field(s) or field(s) are invalid';
 export const MISSING_REQUIRED_FIELDS = 'Missing required fields';

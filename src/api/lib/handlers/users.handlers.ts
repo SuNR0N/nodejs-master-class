@@ -14,10 +14,14 @@ import { helpers } from '../helpers';
 import {
   IRequestData,
   IResponseData,
+  IUser,
   IUserDTO,
 } from '../interfaces';
 import { authService } from '../services/auth.service';
-import { dataService } from '../services/data.service';
+import {
+  dataService,
+  Directory,
+} from '../services/data.service';
 import { RequestHandler } from './types';
 
 interface IUsersHandlers {
@@ -41,7 +45,7 @@ async function getUser(requestData: IRequestData): Promise<IResponseData<Partial
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
     try {
-      const user = await dataService.read('users', String(phone));
+      const user = await dataService.read<IUser>(Directory.Users, String(phone));
       delete user.hashedPassword;
       return {
         payload: user,
@@ -81,7 +85,7 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
     await authService.checkAuthenticated(requestData.headers, phone);
     if (firstName || lastName || password) {
       try {
-        const user = await dataService.read('users', String(phone));
+        const user = await dataService.read<IUser>(Directory.Users, String(phone));
         if (firstName) {
           user.firstName = firstName;
         }
@@ -89,9 +93,9 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
           user.lastName = lastName;
         }
         if (password) {
-          user.hashedPassword = helpers.hash(password);
+          user.hashedPassword = helpers.hash(password) as string;
         }
-        await dataService.update('users', String(phone), user);
+        await dataService.update(Directory.Users, String(phone), user);
         return { statusCode: 200 };
       } catch (err) {
         if (err instanceof EntityNotFoundError) {
@@ -119,8 +123,8 @@ async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
     try {
-      await dataService.read('users', String(phone));
-      await dataService.delete('users', String(phone));
+      await dataService.read<IUser>(Directory.Users, String(phone));
+      await dataService.delete(Directory.Users, String(phone));
       return { statusCode: 204 };
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
@@ -158,7 +162,7 @@ async function createUser(requestData: IRequestData<IUserDTO>): Promise<IRespons
 
   if (firstName && lastName && phone && password && tosAgreement) {
     try {
-      await dataService.read('users', phone);
+      await dataService.read<IUser>(Directory.Users, phone);
       throw new HTTPError(409, USER_ALREADY_EXISTS);
     } catch (err) {
       if (err instanceof HTTPError) {
@@ -174,7 +178,7 @@ async function createUser(requestData: IRequestData<IUserDTO>): Promise<IRespons
           tosAgreement,
         };
         try {
-          await dataService.create('users', phone, user);
+          await dataService.create(Directory.Users, phone, user);
           return { statusCode: 201 };
         } catch {
           throw new HTTPError(500, USER_CREATION_FAILED);

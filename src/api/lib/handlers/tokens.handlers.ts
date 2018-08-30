@@ -20,8 +20,12 @@ import {
   ITokenDTO,
   ITokenRequestDTO,
   ITokenUpdateDTO,
+  IUser,
 } from '../interfaces';
-import { dataService } from '../services/data.service';
+import {
+  dataService,
+  Directory,
+} from '../services/data.service';
 import { RequestHandler } from './types';
 
 interface ITokensHandlers {
@@ -44,7 +48,7 @@ async function getToken(requestData: IRequestData): Promise<IResponseData<IToken
 
   if (id) {
     try {
-      const token = await dataService.read('tokens', String(id));
+      const token = await dataService.read<IToken>(Directory.Tokens, String(id));
       return {
         payload: token,
         statusCode: 200,
@@ -68,10 +72,10 @@ async function updateToken(requestData: IRequestData<ITokenUpdateDTO>): Promise<
 
   if (id && extend) {
     try {
-      const token = await dataService.read('tokens', id);
+      const token = await dataService.read<IToken>(Directory.Tokens, id);
       if (token.expires > Date.now()) {
         token.expires = Date.now() + environment.tokenValidity;
-        await dataService.update('tokens', id, token);
+        await dataService.update(Directory.Tokens, id, token);
         return { statusCode: 200 };
       } else {
         throw new HTTPError(400, TOKEN_CANNOT_BE_EXTENDED);
@@ -100,8 +104,8 @@ async function deleteToken(requestData: IRequestData): Promise<IResponseData> {
 
   if (id) {
     try {
-      await dataService.read('tokens', id);
-      await dataService.delete('tokens', id);
+      await dataService.read<IToken>(Directory.Tokens, id);
+      await dataService.delete(Directory.Tokens, id);
       return { statusCode: 204 };
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
@@ -130,7 +134,7 @@ async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise
 
   if (phone && password) {
     try {
-      const user = await dataService.read('users', phone);
+      const user = await dataService.read<IUser>(Directory.Users, phone);
       const hashedPassword = helpers.hash(password);
       if (user.hashedPassword === hashedPassword) {
         const tokenId = helpers.createRandomString(20);
@@ -140,7 +144,7 @@ async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise
           id: tokenId,
           phone,
         };
-        await dataService.create('tokens', tokenId, token);
+        await dataService.create(Directory.Tokens, tokenId, token);
         return {
           payload: token,
           statusCode: 201,

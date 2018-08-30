@@ -6,6 +6,7 @@ interface IEnvironmentConfig {
   hashingSecret: string;
   httpPort: number;
   httpsPort: number;
+  maxChecks: number;
   tokenName: string;
   tokenValidity: number;
 }
@@ -16,6 +17,7 @@ const environments: { [key: string]: IEnvironmentConfig } = {};
 const baseConfig: Partial<IEnvironmentConfig> = {
   dataDir: join(__dirname, '/../.data'),
   hashingSecret: 's3cr37',
+  maxChecks: 5,
   tokenName: 'token',
   tokenValidity: 1000 * 60 * 60,
 };

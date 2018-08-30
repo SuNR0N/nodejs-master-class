@@ -1,4 +1,7 @@
-import { dataService } from './data.service';
+import {
+  dataService,
+  Directory,
+} from './data.service';
 
 interface ITokenService {
   verify: (tokenId: string, userId: string) => Promise<boolean>;
@@ -6,7 +9,7 @@ interface ITokenService {
 
 async function verify(tokenId: string, userId: string): Promise<boolean> {
   try {
-    const token = await dataService.read('tokens', tokenId);
+    const token = await dataService.read(Directory.Tokens, tokenId);
     return token.phone === userId && token.expires > Date.now();
   } catch {
     return false;

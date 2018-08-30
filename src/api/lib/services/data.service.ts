@@ -15,14 +15,20 @@ const truncateAsync = promisify(fs.truncate);
 const unlinkAsync = promisify(fs.unlink);
 const writeFileAsync = promisify(fs.writeFile);
 
-interface IDataService {
-  create: (dir: string, file: string, content: any) => Promise<void>;
-  delete: (dir: string, file: string) => Promise<void>;
-  read: (dir: string, file: string) => Promise<any>;
-  update: (dir: string, file: string, content: any) => Promise<void>;
+export enum Directory {
+  Checks = 'checks',
+  Tokens = 'tokens',
+  Users = 'users',
 }
 
-async function createFile(dir: string, file: string, content: any): Promise<void> {
+interface IDataService {
+  create: (dir: Directory, file: string, content: any) => Promise<void>;
+  delete: (dir: Directory, file: string) => Promise<void>;
+  read: <T = any>(dir: Directory, file: string) => Promise<T>;
+  update: (dir: Directory, file: string, content: any) => Promise<void>;
+}
+
+async function createFile(dir: Directory, file: string, content: any): Promise<void> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
     const fileDescriptor = await openAsync(filePath, 'wx');
@@ -42,7 +48,7 @@ async function createFile(dir: string, file: string, content: any): Promise<void
   }
 }
 
-async function deleteFile(dir: string, file: string): Promise<void> {
+async function deleteFile(dir: Directory, file: string): Promise<void> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
     return await unlinkAsync(filePath);
@@ -57,7 +63,7 @@ async function deleteFile(dir: string, file: string): Promise<void> {
   }
 }
 
-async function readFile(dir: string, file: string): Promise<any> {
+async function readFile<T = any>(dir: Directory, file: string): Promise<T> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
     const user = await readFileAsync(filePath, 'utf8');
@@ -73,7 +79,7 @@ async function readFile(dir: string, file: string): Promise<any> {
   }
 }
 
-async function updateFile(dir: string, file: string, content: any): Promise<void> {
+async function updateFile(dir: Directory, file: string, content: any): Promise<void> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
     const fileDescriptor = await openAsync(filePath, 'r+');
