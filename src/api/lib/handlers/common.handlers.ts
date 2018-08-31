@@ -15,7 +15,7 @@ async function notFound(_data: IRequestData): Promise<IResponseData> {
 }
 
 async function ping(_data: IRequestData): Promise<IResponseData> {
-  throw new HTTPError(200);
+  return { statusCode: 200 };
 }
 
 export const commonHandlers: ICommonHandlers = {

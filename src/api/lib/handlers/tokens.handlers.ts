@@ -26,6 +26,12 @@ import {
   dataService,
   Directory,
 } from '../services/data.service';
+import { validatorService } from '../services/validator.service';
+import {
+  createTokenSchema,
+  tokenIdSchema,
+  updateTokenSchema,
+} from '../validation/schemas';
 import { RequestHandler } from './types';
 
 interface ITokensHandlers {
@@ -40,12 +46,8 @@ const tokensRouteRegExp = /^tokens\/(?<id>\w+)(?:\/\w+)*$/;
 
 async function getToken(requestData: IRequestData): Promise<IResponseData<ITokenDTO>> {
   const tokensRouteRegExpExec = tokensRouteRegExp.exec(requestData.trimmedPath);
-  let id = tokensRouteRegExpExec && tokensRouteRegExpExec.groups && tokensRouteRegExpExec.groups.id || false;
-
-  if (typeof id === 'string' && id.trim().length === 20) {
-    id = id.trim();
-  }
-
+  const tokenValue = tokensRouteRegExpExec && tokensRouteRegExpExec.groups && tokensRouteRegExpExec.groups.id;
+  const { id } = validatorService.validate({ id: tokenValue }, tokenIdSchema);
   if (id) {
     try {
       const token = await dataService.read<IToken>(Directory.Tokens, String(id));
@@ -63,12 +65,14 @@ async function getToken(requestData: IRequestData): Promise<IResponseData<IToken
 
 async function updateToken(requestData: IRequestData<ITokenUpdateDTO>): Promise<IResponseData> {
   const tokensRouteRegExpExec = tokensRouteRegExp.exec(requestData.trimmedPath);
-  const { extend = false } = requestData.payload;
-  let id = tokensRouteRegExpExec && tokensRouteRegExpExec.groups && tokensRouteRegExpExec.groups.id || false;
-
-  if (typeof id === 'string' && id.trim().length === 20) {
-    id = id.trim();
-  }
+  const tokenValue = tokensRouteRegExpExec && tokensRouteRegExpExec.groups && tokensRouteRegExpExec.groups.id;
+  const {
+    extend,
+    id,
+  } = validatorService.validate({
+    ...requestData.payload,
+    id: tokenValue,
+  }, updateTokenSchema);
 
   if (id && extend) {
     try {
@@ -96,11 +100,8 @@ async function updateToken(requestData: IRequestData<ITokenUpdateDTO>): Promise<
 
 async function deleteToken(requestData: IRequestData): Promise<IResponseData> {
   const tokensRouteRegExpExec = tokensRouteRegExp.exec(requestData.trimmedPath);
-  let id = tokensRouteRegExpExec && tokensRouteRegExpExec.groups && tokensRouteRegExpExec.groups.id || false;
-
-  if (typeof id === 'string' && id.trim().length === 20) {
-    id = id.trim();
-  }
+  const tokenValue = tokensRouteRegExpExec && tokensRouteRegExpExec.groups && tokensRouteRegExpExec.groups.id;
+  const { id } = validatorService.validate({ id: tokenValue }, tokenIdSchema);
 
   if (id) {
     try {
@@ -120,17 +121,10 @@ async function deleteToken(requestData: IRequestData): Promise<IResponseData> {
 }
 
 async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise<IResponseData<ITokenDTO>> {
-  let {
-    phone = false,
-    password = false,
-  } = requestData.payload;
-
-  if (typeof phone === 'string' && phone.trim().length === 10) {
-    phone = phone.trim();
-  }
-  if (typeof password === 'string' && password.trim().length > 0) {
-    password = password.trim();
-  }
+  const {
+    password,
+    phone,
+  } = validatorService.validate(requestData.payload, createTokenSchema);
 
   if (phone && password) {
     try {

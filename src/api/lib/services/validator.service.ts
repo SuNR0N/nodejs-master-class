@@ -8,6 +8,7 @@ export interface IValidationSchema {
 interface IValidators {
   hasLength: Validator<number>;
   isArray: Predicate;
+  isBoolean: Validator<boolean>;
   isIntegerInRange: Validator<number>;
   isMatch: Validator<RegExp>;
   isString: Predicate;
@@ -20,6 +21,8 @@ interface IValidatorService {
 
 const hasLength: Validator<number> = (length) => (value: string) => isString(value) && value.trim().length === length;
 const isArray: Predicate = (value) => Array.isArray(value);
+// tslint:disable-next-line:max-line-length
+const isBoolean: Validator<boolean> = (expected: boolean) => (value) => typeof value === 'boolean' && expected === undefined || value === expected;
 const isIntegerInRange: Validator<number> = (min, max) => (value) => value >= min && value <= max;
 const isMatch: Validator<RegExp> = (expression) => (value: string) => isString(value) && expression.test(value);
 const isString: Predicate = (value) => typeof value === 'string';
@@ -45,6 +48,7 @@ function validate<T = {}>(data: T, schema: IValidationSchema): T {
 export const validators: IValidators = {
   hasLength,
   isArray,
+  isBoolean,
   isIntegerInRange,
   isMatch,
   isString,

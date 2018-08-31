@@ -22,6 +22,12 @@ import {
   dataService,
   Directory,
 } from '../services/data.service';
+import { validatorService } from '../services/validator.service';
+import {
+  createUserSchema,
+  updateUserSchema,
+  userIdSchema,
+} from '../validation/schemas';
 import { RequestHandler } from './types';
 
 interface IUsersHandlers {
@@ -36,11 +42,8 @@ const usersRouteRegExp = /^users\/(?<id>\d*)(?:\/\w+)*$/;
 
 async function getUser(requestData: IRequestData): Promise<IResponseData<Partial<IUserDTO>>> {
   const usersRouteRegExpExec = usersRouteRegExp.exec(requestData.trimmedPath);
-  let phone = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id || false;
-
-  if (typeof phone === 'string' && phone.trim().length === 10) {
-    phone = phone.trim();
-  }
+  const id = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id;
+  const { phone } = validatorService.validate({ phone: id }, userIdSchema);
 
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
@@ -61,25 +64,16 @@ async function getUser(requestData: IRequestData): Promise<IResponseData<Partial
 
 async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise<IResponseData> {
   const usersRouteRegExpExec = usersRouteRegExp.exec(requestData.trimmedPath);
-  let phone = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id || false;
-  let {
-    password = false,
-    firstName = false,
-    lastName = false,
-  } = requestData.payload;
-
-  if (typeof phone === 'string' && phone.trim().length === 10) {
-    phone = phone.trim();
-  }
-  if (typeof firstName === 'string' && firstName.trim().length > 0) {
-    firstName = firstName.trim();
-  }
-  if (typeof lastName === 'string' && lastName.trim().length > 0) {
-    lastName = lastName.trim();
-  }
-  if (typeof password === 'string' && password.trim().length > 0) {
-    password = password.trim();
-  }
+  const id = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id;
+  const {
+    firstName,
+    lastName,
+    password,
+    phone,
+  } = validatorService.validate({
+    ...requestData.payload,
+    phone: id,
+  }, updateUserSchema);
 
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
@@ -114,12 +108,8 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
 
 async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
   const usersRouteRegExpExec = usersRouteRegExp.exec(requestData.trimmedPath);
-  let phone = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id || false;
-
-  if (typeof phone === 'string' && phone.trim().length === 10) {
-    phone = phone.trim();
-  }
-
+  const id = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id;
+  const { phone } = validatorService.validate({ phone: id }, userIdSchema);
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
     try {
@@ -139,26 +129,13 @@ async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
 }
 
 async function createUser(requestData: IRequestData<IUserDTO>): Promise<IResponseData> {
-  const { tosAgreement = false } = requestData.payload;
-  let {
-    firstName = false,
-    lastName = false,
-    phone = false,
-    password = false,
-  } = requestData.payload;
-
-  if (typeof firstName === 'string' && firstName.trim().length > 0) {
-    firstName = firstName.trim();
-  }
-  if (typeof lastName === 'string' && lastName.trim().length > 0) {
-    lastName = lastName.trim();
-  }
-  if (typeof phone === 'string' && phone.trim().length === 10) {
-    phone = phone.trim();
-  }
-  if (typeof password === 'string' && password.trim().length > 0) {
-    password = password.trim();
-  }
+  const {
+    firstName,
+    lastName,
+    password,
+    phone,
+    tosAgreement,
+  } = validatorService.validate(requestData.payload, createUserSchema);
 
   if (firstName && lastName && phone && password && tosAgreement) {
     try {

@@ -13,7 +13,7 @@ function createRandomString(len: number): string {
   const pool = 'abcdefghijklmnopqrstuvwxyz1234567890';
   const poolLen = pool.length;
   let str = '';
-  for (let i = 0; i <= len; i++) {
+  for (let i = 0; i < len; i++) {
     const randomIndex = Math.floor(Math.random() * poolLen);
     str += pool[randomIndex];
   }
