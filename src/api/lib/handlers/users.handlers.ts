@@ -1,11 +1,12 @@
 import {
+  ENTITY_DOES_NOT_EXIST,
   MISSING_FIELDS_TO_UPDATE,
   MISSING_REQUIRED_FIELDS,
   PASSWORD_HASH_FAILED,
+  UNKNOWN_ERROR,
   USER_ALREADY_EXISTS,
   USER_CREATION_FAILED,
   USER_DELETION_FAILED,
-  USER_DOES_NOT_EXIST,
   USER_UPDATE_FAILED,
 } from '../constants/messages';
 import { EntityNotFoundError } from '../errors';
@@ -14,6 +15,7 @@ import { helpers } from '../helpers';
 import {
   IRequestData,
   IResponseData,
+  IToken,
   IUser,
   IUserDTO,
 } from '../interfaces';
@@ -54,8 +56,12 @@ async function getUser(requestData: IRequestData): Promise<IResponseData<Partial
         payload: user,
         statusCode: 200,
       };
-    } catch {
-      throw new HTTPError(404);
+    } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else {
+        throw new HTTPError(500, UNKNOWN_ERROR);
+      }
     }
   } else {
     throw new HTTPError(501);
@@ -93,7 +99,7 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
         return { statusCode: 200 };
       } catch (err) {
         if (err instanceof EntityNotFoundError) {
-          throw new HTTPError(404, USER_DOES_NOT_EXIST);
+          throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
         } else {
           throw new HTTPError(500, USER_UPDATE_FAILED);
         }
@@ -113,12 +119,22 @@ async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
     try {
-      await dataService.read<IUser>(Directory.Users, String(phone));
+      const user = await dataService.read<IUser>(Directory.Users, String(phone));
       await dataService.delete(Directory.Users, String(phone));
+      if (user.checks) {
+        for (const checkId of user.checks) {
+          await dataService.delete(Directory.Checks, checkId);
+        }
+      }
+      const tokens = await dataService.readAll<IToken>(Directory.Tokens);
+      const tokensOfUser = tokens.filter((token) => token.phone === user.phone);
+      for (const token of tokensOfUser) {
+        await dataService.delete(Directory.Tokens, token.id);
+      }
       return { statusCode: 204 };
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
-        throw new HTTPError(404, USER_DOES_NOT_EXIST);
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
       } else {
         throw new HTTPError(500, USER_DELETION_FAILED);
       }

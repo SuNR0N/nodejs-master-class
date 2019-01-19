@@ -2,11 +2,13 @@ import { environment } from '../../config/config';
 import {
   CHECK_CREATION_FAILED,
   CHECK_DELETION_FAILED,
-  CHECK_DOES_NOT_EXIST,
+  CHECK_OF_USER_DOES_NOT_EXIST,
   CHECK_UPDATE_FAILED,
+  ENTITY_DOES_NOT_EXIST,
   MAX_CHECKS_REACHED,
   MISSING_FIELDS_TO_UPDATE,
   MISSING_REQUIRED_FIELDS,
+  UNKNOWN_ERROR,
 } from '../constants/messages';
 import { EntityNotFoundError } from '../errors';
 import { HTTPError } from '../errors/http-error';
@@ -59,8 +61,10 @@ async function getCheck(requestData: IRequestData): Promise<IResponseData<ICheck
     } catch (err) {
       if (err instanceof HTTPError) {
         throw err;
+      } else if (err instanceof EntityNotFoundError) {
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
       } else {
-        throw new HTTPError(404, CHECK_DOES_NOT_EXIST);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {
@@ -102,7 +106,7 @@ async function updateCheck(requestData: IRequestData<Partial<ICheckDTO>>): Promi
         if (err instanceof HTTPError) {
           throw err;
         } else if (err instanceof EntityNotFoundError) {
-          throw new HTTPError(404, CHECK_DOES_NOT_EXIST);
+          throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
         } else {
           throw new HTTPError(500, CHECK_UPDATE_FAILED);
         }
@@ -130,13 +134,15 @@ async function deleteCheck(requestData: IRequestData): Promise<IResponseData> {
       if (deletedCheckIndex !== -1) {
         user.checks!.splice(deletedCheckIndex, 1);
         await dataService.update(Directory.Users, String(check.userPhone), user);
+      } else {
+        throw new HTTPError(500, CHECK_OF_USER_DOES_NOT_EXIST);
       }
       return { statusCode: 204 };
     } catch (err) {
       if (err instanceof HTTPError) {
         throw err;
       } else if (err instanceof EntityNotFoundError) {
-        throw new HTTPError(404, CHECK_DOES_NOT_EXIST);
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
       } else {
         throw new HTTPError(500, CHECK_DELETION_FAILED);
       }

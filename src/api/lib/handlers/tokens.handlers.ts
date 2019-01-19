@@ -1,14 +1,14 @@
 import { environment } from '../../config/config';
 import {
+  ENTITY_DOES_NOT_EXIST,
   MISSING_OR_INVALID_FIELDS,
   MISSING_REQUIRED_FIELDS,
   PASSWORD_MISMATCH,
   TOKEN_CANNOT_BE_EXTENDED,
   TOKEN_CREATION_FAILED,
   TOKEN_DELETION_FAILED,
-  TOKEN_DOES_NOT_EXIST,
   TOKEN_UPDATE_FAILED,
-  USER_DOES_NOT_EXIST,
+  UNKNOWN_ERROR,
 } from '../constants/messages';
 import { EntityNotFoundError } from '../errors';
 import { HTTPError } from '../errors/http-error';
@@ -55,8 +55,12 @@ async function getToken(requestData: IRequestData): Promise<IResponseData<IToken
         payload: token,
         statusCode: 200,
       };
-    } catch {
-      throw new HTTPError(404);
+    } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else {
+        throw new HTTPError(500, UNKNOWN_ERROR);
+      }
     }
   } else {
     throw new HTTPError(501);
@@ -91,7 +95,7 @@ async function updateToken(requestData: IRequestData<ITokenUpdateDTO>): Promise<
       if (err instanceof HTTPError) {
         throw err;
       } else if (err instanceof EntityNotFoundError) {
-        throw new HTTPError(404, TOKEN_DOES_NOT_EXIST);
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
       } else {
         throw new HTTPError(500, TOKEN_UPDATE_FAILED);
       }
@@ -113,7 +117,7 @@ async function deleteToken(requestData: IRequestData): Promise<IResponseData> {
       return { statusCode: 204 };
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
-        throw new HTTPError(404, TOKEN_DOES_NOT_EXIST);
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
       } else {
         throw new HTTPError(500, TOKEN_DELETION_FAILED);
       }
@@ -153,7 +157,7 @@ async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise
       if (err instanceof HTTPError) {
         throw err;
       } else if (err instanceof EntityNotFoundError) {
-        throw new HTTPError(404, USER_DOES_NOT_EXIST);
+        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
       } else {
         throw new HTTPError(500, TOKEN_CREATION_FAILED);
       }

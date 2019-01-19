@@ -10,6 +10,7 @@ import { helpers } from '../helpers';
 
 const closeAsync = promisify(fs.close);
 const openAsync = promisify(fs.open);
+const readdirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);
 const truncateAsync = promisify(fs.truncate);
 const unlinkAsync = promisify(fs.unlink);
@@ -25,7 +26,12 @@ interface IDataService {
   create: (dir: Directory, file: string, content: any) => Promise<void>;
   delete: (dir: Directory, file: string) => Promise<void>;
   read: <T = any>(dir: Directory, file: string) => Promise<T>;
+  readAll: <T = any>(dir: Directory) => Promise<T[]>;
   update: (dir: Directory, file: string, content: any) => Promise<void>;
+}
+
+function getEntityName(directory: Directory): string {
+  return `${directory.charAt(0).toUpperCase()}${directory.slice(1, -1)}`;
 }
 
 async function createFile(dir: Directory, file: string, content: any): Promise<void> {
@@ -56,7 +62,7 @@ async function deleteFile(dir: Directory, file: string): Promise<void> {
     const baseMessage = 'Could not delete file';
     switch (err.code) {
       case 'ENOENT':
-        throw new EntityNotFoundError(`${baseMessage} as it may not exist`);
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), file);
       default:
         throw new Error(baseMessage);
     }
@@ -66,13 +72,37 @@ async function deleteFile(dir: Directory, file: string): Promise<void> {
 async function readFile<T = any>(dir: Directory, file: string): Promise<T> {
   const filePath = `${environment.dataDir}/${dir}/${file}.json`;
   try {
-    const user = await readFileAsync(filePath, 'utf8');
-    return helpers.parseJSONToObject(user);
+    const content = await readFileAsync(filePath, 'utf8');
+    return helpers.parseJSONToObject(content);
   } catch (err) {
     const baseMessage = 'Could not read file';
     switch (err.code) {
       case 'ENOENT':
-        throw new EntityNotFoundError(`${baseMessage} as it may not exist`);
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), file);
+      default:
+        throw new Error(baseMessage);
+    }
+  }
+}
+
+async function readDirectory<T = any>(dir: Directory): Promise<T[]> {
+  const dirPath = `${environment.dataDir}/${dir}`;
+  try {
+    const fileNames = await readdirAsync(dirPath, 'utf8');
+    const ids = fileNames
+      .filter((fileName) => fileName.match(/\.json$/))
+      .map((fileName) => fileName.split('.')[0]);
+    const files: T[] = [];
+    for (const id of ids) {
+      const file = await readFile<T>(dir, id);
+      files.push(file);
+    }
+    return files;
+  } catch (err) {
+    const baseMessage = 'Could not read directory';
+    switch (err.code) {
+      case 'ENOENT':
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), dir);
       default:
         throw new Error(baseMessage);
     }
@@ -91,7 +121,7 @@ async function updateFile(dir: Directory, file: string, content: any): Promise<v
     const baseMessage = 'Could not update existing file';
     switch (err.code) {
       case 'ENOENT':
-        throw new EntityNotFoundError(`${baseMessage} as it may not exist`);
+        throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), file);
       case 'EACCES':
         throw new Error(`${baseMessage} due to lack of permission`);
       default:
@@ -104,5 +134,6 @@ export const dataService: IDataService = {
   create: createFile,
   delete: deleteFile,
   read: readFile,
+  readAll: readDirectory,
   update: updateFile,
 };
