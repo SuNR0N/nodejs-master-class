@@ -9,6 +9,13 @@ interface IEnvironmentConfig {
   maxChecks: number;
   tokenName: string;
   tokenValidity: number;
+  twilio: ITwilioConfig;
+}
+
+interface ITwilioConfig {
+  accountSid?: string;
+  authToken?: string;
+  fromPhone: string;
 }
 
 // Container for environments
@@ -20,6 +27,11 @@ const baseConfig: Partial<IEnvironmentConfig> = {
   maxChecks: 5,
   tokenName: 'token',
   tokenValidity: 1000 * 60 * 60,
+  twilio: {
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+    fromPhone: '+15005550006',
+  },
 };
 
 // Staging (default) environment
@@ -39,7 +51,7 @@ environments.production = {
 } as IEnvironmentConfig;
 
 // Determine which environment was passed as a command-line argument
-const currentEnvironment = typeof(process.env.NODE_ENV) === 'string' ?
+const currentEnvironment = typeof (process.env.NODE_ENV) === 'string' ?
   process.env.NODE_ENV.toLowerCase() :
   '';
 

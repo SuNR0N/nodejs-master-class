@@ -11,6 +11,10 @@
       "args": [
         "${workspaceFolder}/src/api/index.ts"
       ],
+      "env": {
+        "TWILIO_ACCOUNT_SID": "",
+        "TWILIO_AUTH_TOKEN": ""
+      },
       "runtimeArgs": [
         "--nolazy",
         "-r",

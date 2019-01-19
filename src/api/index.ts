@@ -22,6 +22,7 @@ import {
   IErrorDTO,
   IRequestData,
 } from './lib/interfaces';
+import { TwilioService } from './lib/services/twilio.service';
 
 // All the server logic for both HTTP and HTTPS server
 const requestListener = (req: IncomingMessage, res: ServerResponse) => {
@@ -125,3 +126,14 @@ httpsServer.listen(environment.httpsPort, () => {
   // tslint:disable-next-line:no-console
   console.info(`The HTTPS server is listening on port ${environment.httpsPort} in ${environment.envName} mode`);
 });
+
+// Send test SMS through Twilio
+(async () => {
+  const twilioService = new TwilioService();
+  try {
+    await twilioService.sendSMS('+14158375309', 'FooBar');
+  } catch (err) {
+    // tslint:disable-next-line:no-console
+    console.error(err);
+  }
+})();
