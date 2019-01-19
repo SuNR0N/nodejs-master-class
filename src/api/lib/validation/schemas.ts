@@ -30,3 +30,21 @@ export const createUserSchema: IValidationSchema = {
   phone: validators.hasLength(10),
   tosAgreement: validators.isBoolean(true),
 };
+export const checkIdSchema: IValidationSchema = {
+  id: validators.hasLength(20),
+};
+export const updateCheckSchema: IValidationSchema = {
+  id: validators.hasLength(20),
+  method: validators.isMatch(/^(DELETE|GET|PATCH|POST|PUT)$/),
+  protocol: validators.isMatch(/^https?$/),
+  successCodes: validators.isArray('number'),
+  timeoutSeconds: validators.isIntegerInRange(1, 5),
+  url: validators.minLength(0),
+};
+export const createCheckSchema: IValidationSchema = {
+  method: validators.isMatch(/^(DELETE|GET|PATCH|POST|PUT)$/),
+  protocol: validators.isMatch(/^https?$/),
+  successCodes: validators.isArray('number'),
+  timeoutSeconds: validators.isIntegerInRange(1, 5),
+  url: validators.minLength(0),
+};

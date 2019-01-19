@@ -80,7 +80,10 @@ async function updateToken(requestData: IRequestData<ITokenUpdateDTO>): Promise<
       if (token.expires > Date.now()) {
         token.expires = Date.now() + environment.tokenValidity;
         await dataService.update(Directory.Tokens, id, token);
-        return { statusCode: 200 };
+        return {
+          payload: token,
+          statusCode: 200,
+        };
       } else {
         throw new HTTPError(400, TOKEN_CANNOT_BE_EXTENDED);
       }

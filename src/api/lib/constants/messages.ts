@@ -1,6 +1,9 @@
 import { environment } from '../../config/config';
 
 export const CHECK_CREATION_FAILED = 'Could not create the new check';
+export const CHECK_DELETION_FAILED = 'Could not delete the specified check';
+export const CHECK_DOES_NOT_EXIST = 'The specified check does not exist';
+export const CHECK_UPDATE_FAILED = 'Could not update the specified check';
 export const MAX_CHECKS_REACHED = `The user already has the maximum number of checks (${environment.maxChecks})`;
 export const MISSING_FIELDS_TO_UPDATE = 'Missing fields to update';
 export const MISSING_OR_INVALID_FIELDS = 'Missing required field(s) or field(s) are invalid';

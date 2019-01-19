@@ -23,7 +23,7 @@ async function checks(requestData: IRequestData): Promise<IResponseData> {
     'DELETE',
     'GET',
     'POST',
-    'PUT',
+    'PATCH',
   ];
   if (acceptableMethods.indexOf(requestData.method) !== -1) {
     return await checksHandlers[requestData.method](requestData);
