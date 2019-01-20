@@ -180,7 +180,7 @@ async function createCheck(requestData: IRequestData<ICheckRequestDTO>): Promise
           lastChecked: NaN,
           method,
           protocol,
-          state: State.DOWN,
+          state: State.Down,
           successCodes,
           timeoutSeconds,
           url,

@@ -22,6 +22,10 @@ import {
   IErrorDTO,
   IRequestData,
 } from './interfaces';
+import { loggerService } from './services/logger.service';
+import { Color } from './models/color';
+
+const debug = loggerService.debug('server');
 
 // All the server logic for both HTTP and HTTPS server
 const requestListener = (req: IncomingMessage, res: ServerResponse) => {
@@ -65,7 +69,7 @@ const requestListener = (req: IncomingMessage, res: ServerResponse) => {
 
     let error: IErrorDTO;
     let payload: string | undefined;
-    let statusCode: number;
+    let statusCode: number = 200;
     try {
       const response = await requestHandler(data);
       statusCode = response.statusCode || 200;
@@ -87,11 +91,14 @@ const requestListener = (req: IncomingMessage, res: ServerResponse) => {
         res.setHeader('Content-Type', 'application/json');
       }
 
-      res.writeHead(statusCode!);
+      res.writeHead(statusCode);
       res.end(payload);
 
-      // tslint:disable-next-line:no-console
-      console.log(`Returning this response: ${payload} with a status code: ${statusCode!}`);
+      if (statusCode === 200 || statusCode === 201) {
+        debug(Color.Green, `${method} /${trimmedPath} ${statusCode}`);
+      } else {
+        debug(Color.Red, `${method} /${trimmedPath} ${statusCode}`);
+      }
     }
   });
 };
@@ -117,13 +124,11 @@ export const httpsServer = createHttpsServer(httpsServerOptions, requestListener
 export function init() {
   // Start the HTTP server
   httpServer.listen(environment.httpPort, () => {
-    // tslint:disable-next-line:no-console
-    console.info(`The HTTP server is listening on port ${environment.httpPort} in ${environment.envName} mode`);
+    loggerService.log(Color.Cyan, `The HTTP server is listening on port ${environment.httpPort} in ${environment.envName} mode`);
   });
 
   // Start the HTTPS server
   httpsServer.listen(environment.httpsPort, () => {
-    // tslint:disable-next-line:no-console
-    console.info(`The HTTPS server is listening on port ${environment.httpsPort} in ${environment.envName} mode`);
+    loggerService.log(Color.Magenta, `The HTTPS server is listening on port ${environment.httpsPort} in ${environment.envName} mode`);
   });
 }

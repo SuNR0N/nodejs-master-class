@@ -1,4 +1,4 @@
 export enum State {
-  UP = 'UP',
-  DOWN = 'DOWN',
+  Up = 'UP',
+  Down = 'DOWN',
 }

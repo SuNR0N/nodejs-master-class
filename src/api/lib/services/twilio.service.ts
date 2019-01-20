@@ -5,6 +5,10 @@ import {
 import { stringify } from 'querystring';
 
 import { environment } from '../../config/config';
+import { loggerService } from './logger.service';
+import { Color } from '../models/color';
+
+const debug = loggerService.debug('twilio');
 
 export interface ITwilioService {
   sendSMS: (phone: string, message: string) => Promise<void>;
@@ -44,8 +48,7 @@ async function sendSMS(phone: string, message: string): Promise<void> {
       const status = res.statusCode;
 
       if (status === 200 || status === 201) {
-        // tslint:disable-next-line:no-console
-        console.info(`"${message}" has been successfully sent to ${payload.To} using Twilio`);
+        debug(Color.Green, `"${message}" has been successfully sent to ${payload.To} using Twilio`);
         resolve();
       } else {
         reject(`Status code returned was ${status}`);

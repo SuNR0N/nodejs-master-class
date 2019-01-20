@@ -19,6 +19,9 @@ import {
   validatorService,
 } from './services';
 import { validCheckSchema } from './validation/schemas';
+import { Color } from './models/color';
+
+const debug = loggerService.debug('workers');
 
 async function validateCheckData(check: ICheck): Promise<void> {
   const validatedCheck = validatorService.validate(check, validCheckSchema);
@@ -44,8 +47,7 @@ async function validateCheckData(check: ICheck): Promise<void> {
     }
     await processCheckOutcome(check, checkOutcome);
   } else {
-    // tslint:disable-next-line:no-console
-    console.debug('One of the checks is not formatted properly. Skipping it.');
+    debug('One of the checks is not formatted properly. Skipping it.');
   }
 }
 
@@ -91,18 +93,16 @@ async function processCheckOutcome(check: ICheck, checkOutcome: ICheckOutcome): 
   check.state = checkOutcome.state;
   check.lastChecked = timeOfCheck;
 
-  // tslint:disable:no-console
   try {
     await dataService.update(Directory.Checks, check.id, check);
     if (alertWarranted) {
       await alertUsersToStatusChange(check);
     } else {
-      console.info(`Check outcome has not changed for check with ID = ${check.id}, no alert needed`);
+      debug(`Check outcome has not changed for check with ID = ${check.id}, no alert needed`);
     }
   } catch {
-    console.error(`Error trying to save updates to check with ID = ${check.id}`);
+    debug(`Error trying to save updates to check with ID = ${check.id}`);
   }
-  // tslint:enable:no-console
 }
 
 async function log(check: ICheck, outcome: ICheckOutcome, alertWarranted: boolean, timestamp: number) {
@@ -125,21 +125,18 @@ async function log(check: ICheck, outcome: ICheckOutcome, alertWarranted: boolea
 
 async function alertUsersToStatusChange(check: ICheck) {
   const message = `Alert: Your check for ${check.method} ${check.protocol}://${check.url} is currently ${check.state}`;
-  // tslint:disable:no-console
   try {
     await twilioService.sendSMS(`+${check.userPhone}`, message);
-    console.info('Success: User was alerted to a status change in their check, via SMS');
+    debug('Success: User was alerted to a status change in their check, via SMS');
   } catch (err) {
-    console.error('Error: Could not send SMS alert to user who had a state change in their check');
+    debug('Error: Could not send SMS alert to user who had a state change in their check');
   }
-  // tslint:enable:no-console
 }
 
 async function gatherAllChecks() {
   const checks = await dataService.list<ICheck>(Directory.Checks);
   if (checks.length === 0) {
-    // tslint:disable-next-line:no-console
-    console.info('Could not find any checks to process');
+    debug('Could not find any checks to process');
   }
   for (const check of checks) {
     await validateCheckData(check);
@@ -156,7 +153,7 @@ async function rotateLogs() {
       await loggerService.truncate(logId);
     }
   } catch (err) {
-    console.error('Error while trying to rotate the logs:', err.message);
+    debug('Error while trying to rotate the logs:', err.message);
   }
 }
 
@@ -173,6 +170,8 @@ function logRotationLoop() {
 }
 
 export async function init() {
+  loggerService.log(Color.Yellow, 'Background workers are running');
+
   await gatherAllChecks();
 
   loop();
