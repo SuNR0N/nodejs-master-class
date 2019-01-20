@@ -7,6 +7,8 @@ interface IEnvironmentConfig {
   hashingSecret: string;
   httpPort: number;
   httpsPort: number;
+  logDir: string;
+  logRotationInterval: number;
   maxChecks: number;
   tokenName: string;
   tokenValidity: number;
@@ -26,6 +28,8 @@ const baseConfig: Partial<IEnvironmentConfig> = {
   checkInterval: 1000 * 60,
   dataDir: join(__dirname, '/../.data'),
   hashingSecret: 's3cr37',
+  logDir: join(__dirname, '/../.logs'),
+  logRotationInterval: 1000 * 60 * 60 * 24,
   maxChecks: 5,
   tokenName: 'token',
   tokenValidity: 1000 * 60 * 60,

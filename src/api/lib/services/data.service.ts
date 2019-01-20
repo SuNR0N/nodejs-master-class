@@ -1,6 +1,3 @@
-import fs from 'fs';
-import { promisify } from 'util';
-
 import { environment } from '../../config/config';
 import {
   EntityExistsError,
@@ -9,14 +6,15 @@ import {
 } from '../errors';
 import { helpers } from '../helpers';
 import { Directory } from '../models/directory';
-
-const closeAsync = promisify(fs.close);
-const openAsync = promisify(fs.open);
-const readdirAsync = promisify(fs.readdir);
-const readFileAsync = promisify(fs.readFile);
-const truncateAsync = promisify(fs.truncate);
-const unlinkAsync = promisify(fs.unlink);
-const writeFileAsync = promisify(fs.writeFile);
+import {
+  closeAsync,
+  openAsync,
+  readdirAsync,
+  readFileAsync,
+  truncateAsync,
+  unlinkAsync,
+  writeFileAsync,
+} from '../utils/async.utils';
 
 interface IDataService {
   create: (dir: Directory, file: string, content: any) => Promise<void>;

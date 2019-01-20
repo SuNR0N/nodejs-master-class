@@ -17,6 +17,14 @@
       "allow-leading-underscore",
       "allow-pascal-case",
       "allow-snake-case"
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never",
+        "esSpecCompliant": true,
+      },
     ]
   },
   "rulesDirectory": []

@@ -1,3 +1,5 @@
 export interface ICheckOutcome {
-  responseCode: number;
+  error?: string;
+  responseCode?: number;
+  state: string;
 }

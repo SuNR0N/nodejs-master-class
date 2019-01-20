@@ -3,4 +3,5 @@
 node_modules
 
 src/api/.data/**/*.json
+src/api/.logs/*[.log,.gz.b64]
 src/api/https/*.pem
