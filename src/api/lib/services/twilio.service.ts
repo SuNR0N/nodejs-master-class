@@ -5,8 +5,8 @@ import {
 import { stringify } from 'querystring';
 
 import { environment } from '../../config/config';
-import { loggerService } from './logger.service';
 import { Color } from '../models/color';
+import { loggerService } from './logger.service';
 
 const debug = loggerService.debug('twilio');
 

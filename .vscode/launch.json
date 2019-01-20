@@ -23,6 +23,38 @@
       "sourceMaps": true,
       "cwd": "${workspaceRoot}",
       "protocol": "inspector",
+    },
+    {
+      "name": "Hello World API",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${workspaceFolder}/src/hello-world-api/index.ts"
+      ],
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+    },
+    {
+      "name": "Pizza Delivery API",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${workspaceFolder}/src/pizza-delivery-api/index.ts"
+      ],
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
     }
   ]
 }

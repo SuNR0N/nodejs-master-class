@@ -23,8 +23,8 @@
       {
         "multiline": "always",
         "singleline": "never",
-        "esSpecCompliant": true,
-      },
+        "esSpecCompliant": true
+      }
     ]
   },
   "rulesDirectory": []

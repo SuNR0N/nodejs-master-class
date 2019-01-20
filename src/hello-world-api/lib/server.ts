@@ -105,10 +105,7 @@ const requestListener = (req: IncomingMessage, res: ServerResponse) => {
 
 // Define a request router
 const router: { [key: string]: RequestHandler } = {
-  checks: handlers.checks,
-  ping: handlers.ping,
-  tokens: handlers.tokens,
-  users: handlers.users,
+  hello: handlers.hello,
 };
 
 // Instantiate the HTTP server

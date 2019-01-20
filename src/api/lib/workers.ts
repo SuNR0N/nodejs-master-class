@@ -11,6 +11,7 @@ import {
   ICheckOutcome,
 } from './interfaces';
 import { ILogData } from './interfaces/log-data';
+import { Color } from './models/color';
 import { Directory } from './models/directory';
 import {
   dataService,
@@ -19,7 +20,6 @@ import {
   validatorService,
 } from './services';
 import { validCheckSchema } from './validation/schemas';
-import { Color } from './models/color';
 
 const debug = loggerService.debug('workers');
 
@@ -146,8 +146,8 @@ async function gatherAllChecks() {
 async function rotateLogs() {
   try {
     const logs = await loggerService.list(false);
-    for (const log of logs) {
-      const logId = log.replace('.json', '');
+    for (const logFileName of logs) {
+      const logId = logFileName.replace('.json', '');
       const newFileId = `${logId}-${Date.now()}`;
       await loggerService.compress(logId, newFileId);
       await loggerService.truncate(logId);

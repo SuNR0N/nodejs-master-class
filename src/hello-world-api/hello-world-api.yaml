@@ -1,0 +1,68 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Hello World API
+  license:
+    name: MIT
+servers:
+  - url: "{protocol}://localhost:{port}"
+    description: Hello World API Server
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: http
+      port:
+        enum:
+          - '3000'
+          - '3001'
+          - '5000'
+          - '5001'
+        default: '3000'
+paths:
+  /hello:
+    post:
+      summary: Welcome
+      operationId: hello
+      tags:
+        - hello
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/HelloResponse"
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/HTTPError"
+              example:
+                message: 'Method Not Allowed'
+        default:
+          description: Unknown Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPError"
+              example:
+                message: 'Unknown Error'
+components:
+  schemas:
+    HelloResponse:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+      example:
+        message: Hello World
+    HTTPError:
+      required:
+        - message
+      properties:
+        message:
+          type: string

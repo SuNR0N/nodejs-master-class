@@ -2,6 +2,8 @@
 
 node_modules
 
-src/api/.data/**/*.json
-src/api/.logs/*[.log,.gz.b64]
-src/api/https/*.pem
+src/**/.data/**/*.json
+src/**/.logs/*[.log,.gz.b64]
+src/**/https/*.pem
+
+build

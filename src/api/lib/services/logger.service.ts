@@ -1,4 +1,6 @@
+import { debuglog } from 'util';
 import { environment } from '../../config/config';
+import { Color } from '../models/color';
 import {
   appendFileAsync,
   gzipAsync,
@@ -8,8 +10,6 @@ import {
   unzipAsync,
   writeFileAsync,
 } from '../utils/async.utils';
-import { debuglog } from 'util';
-import { Color } from '../models/color';
 
 const debug = _debug('logger');
 
@@ -103,4 +103,4 @@ export const loggerService: ILoggerService = {
   list,
   log,
   truncate,
-}
+};

@@ -1,6 +1,6 @@
 import fs from 'fs';
-import zlib from 'zlib';
 import { promisify } from 'util';
+import zlib from 'zlib';
 
 export const appendFileAsync = promisify(fs.appendFile);
 export const closeAsync = promisify(fs.close);

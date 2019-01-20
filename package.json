@@ -7,9 +7,20 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "build:api": "tsc -p src/api/tsconfig.json",
+    "build:hello-world-api": "tsc -p src/hello-world-api/tsconfig.json",
+    "build:pizza-delivery-api": "tsc -p src/pizza-delivery-api/tsconfig.json",
     "lint": "tslint -p tsconfig.json",
+    "lint:api": "tslint -p src/api/tsconfig.json",
+    "lint:hello-world-api": "tslint -p src/hello-world-api/tsconfig.json",
+    "lint:pizza-delivery-api": "tslint -p src/pizza-delivery-api/tsconfig.json",
     "lint:fix": "tslint --fix -p tsconfig.json",
-    "start": "ts-node src/api/index.ts"
+    "lint:api:fix": "tslint --fix -p src/api/tsconfig.json",
+    "lint:hello-world-api:fix": "tslint --fix -p src/hello-world-api/tsconfig.json",
+    "lint:pizza-delivery-api:fix": "tslint --fix -p src/pizza-delivery-api/tsconfig.json",
+    "start:api": "ts-node src/api/index.ts",
+    "start:hello-world-api": "ts-node src/hello-world-api/index.ts",
+    "start:pizza-delivery-api": "ts-node src/pizza-delivery-api/index.ts"
   },
   "devDependencies": {
     "@types/node": "^10.9.2",
