@@ -1,15 +1,16 @@
 import {
   ENTITY_DOES_NOT_EXIST,
+  ENTITY_OPERATION_FAILED,
   MISSING_FIELDS_TO_UPDATE,
   MISSING_REQUIRED_FIELDS,
   PASSWORD_HASH_FAILED,
   UNKNOWN_ERROR,
   USER_ALREADY_EXISTS,
-  USER_CREATION_FAILED,
-  USER_DELETION_FAILED,
-  USER_UPDATE_FAILED,
 } from '../constants/messages';
-import { EntityNotFoundError } from '../errors';
+import {
+  EntityNotFoundError,
+  FileOperationError,
+} from '../errors';
 import { HTTPError } from '../errors/http-error';
 import { helpers } from '../helpers';
 import {
@@ -19,12 +20,12 @@ import {
   IUser,
   IUserDTO,
 } from '../interfaces';
-import { authService } from '../services/auth.service';
+import { Directory } from '../models/directory';
 import {
+  authService,
   dataService,
-  Directory,
-} from '../services/data.service';
-import { validatorService } from '../services/validator.service';
+  validatorService,
+} from '../services';
 import {
   createUserSchema,
   updateUserSchema,
@@ -59,6 +60,8 @@ async function getUser(requestData: IRequestData): Promise<IResponseData<Partial
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
         throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
         throw new HTTPError(500, UNKNOWN_ERROR);
       }
@@ -100,8 +103,10 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
       } catch (err) {
         if (err instanceof EntityNotFoundError) {
           throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+        } else if (err instanceof FileOperationError) {
+          throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
         } else {
-          throw new HTTPError(500, USER_UPDATE_FAILED);
+          throw new HTTPError(500, UNKNOWN_ERROR);
         }
       }
     } else {
@@ -126,7 +131,7 @@ async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
           await dataService.delete(Directory.Checks, checkId);
         }
       }
-      const tokens = await dataService.readAll<IToken>(Directory.Tokens);
+      const tokens = await dataService.list<IToken>(Directory.Tokens);
       const tokensOfUser = tokens.filter((token) => token.phone === user.phone);
       for (const token of tokensOfUser) {
         await dataService.delete(Directory.Tokens, token.id);
@@ -135,8 +140,10 @@ async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
         throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
-        throw new HTTPError(500, USER_DELETION_FAILED);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {
@@ -173,8 +180,12 @@ async function createUser(requestData: IRequestData<IUserDTO>): Promise<IRespons
         try {
           await dataService.create(Directory.Users, phone, user);
           return { statusCode: 201 };
-        } catch {
-          throw new HTTPError(500, USER_CREATION_FAILED);
+        } catch (err) {
+          if (err instanceof FileOperationError) {
+            throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
+          } else {
+            throw new HTTPError(500, UNKNOWN_ERROR);
+          }
         }
       } else {
         throw new HTTPError(500, PASSWORD_HASH_FAILED);

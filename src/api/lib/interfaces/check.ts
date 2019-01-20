@@ -6,4 +6,6 @@ export interface ICheck {
   timeoutSeconds: number;
   url: string;
   userPhone: string;
+  state: string;
+  lastChecked: number;
 }

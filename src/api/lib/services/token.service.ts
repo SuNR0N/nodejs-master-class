@@ -1,8 +1,6 @@
-import { IToken } from '../interfaces';
-import {
-  dataService,
-  Directory,
-} from './data.service';
+import { IToken } from '../interfaces/token';
+import { Directory } from '../models/directory';
+import { dataService } from './data.service';
 
 interface ITokenService {
   verify: (tokenId: string, userId: string) => Promise<boolean>;

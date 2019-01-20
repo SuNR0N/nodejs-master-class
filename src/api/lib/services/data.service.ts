@@ -5,8 +5,10 @@ import { environment } from '../../config/config';
 import {
   EntityExistsError,
   EntityNotFoundError,
+  FileOperationError,
 } from '../errors';
 import { helpers } from '../helpers';
+import { Directory } from '../models/directory';
 
 const closeAsync = promisify(fs.close);
 const openAsync = promisify(fs.open);
@@ -16,17 +18,11 @@ const truncateAsync = promisify(fs.truncate);
 const unlinkAsync = promisify(fs.unlink);
 const writeFileAsync = promisify(fs.writeFile);
 
-export enum Directory {
-  Checks = 'checks',
-  Tokens = 'tokens',
-  Users = 'users',
-}
-
 interface IDataService {
   create: (dir: Directory, file: string, content: any) => Promise<void>;
   delete: (dir: Directory, file: string) => Promise<void>;
   read: <T = any>(dir: Directory, file: string) => Promise<T>;
-  readAll: <T = any>(dir: Directory) => Promise<T[]>;
+  list: <T = any>(dir: Directory) => Promise<T[]>;
   update: (dir: Directory, file: string, content: any) => Promise<void>;
 }
 
@@ -44,12 +40,10 @@ async function createFile(dir: Directory, file: string, content: any): Promise<v
   } catch (err) {
     const baseMessage = 'Could not create new file';
     switch (err.code) {
-      case 'ENOENT':
-        throw new Error(`${baseMessage} as it may have a non-existing parent directory`);
       case 'EEXIST':
         throw new EntityExistsError(`${baseMessage} as it may already exist`);
       default:
-        throw new Error(baseMessage);
+        throw new FileOperationError(baseMessage, getEntityName(dir), file, 'create');
     }
   }
 }
@@ -64,7 +58,7 @@ async function deleteFile(dir: Directory, file: string): Promise<void> {
       case 'ENOENT':
         throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), file);
       default:
-        throw new Error(baseMessage);
+        throw new FileOperationError(baseMessage, getEntityName(dir), file, 'delete');
     }
   }
 }
@@ -80,12 +74,12 @@ async function readFile<T = any>(dir: Directory, file: string): Promise<T> {
       case 'ENOENT':
         throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), file);
       default:
-        throw new Error(baseMessage);
+        throw new FileOperationError(baseMessage, getEntityName(dir), file, 'read');
     }
   }
 }
 
-async function readDirectory<T = any>(dir: Directory): Promise<T[]> {
+async function listDirectory<T = any>(dir: Directory): Promise<T[]> {
   const dirPath = `${environment.dataDir}/${dir}`;
   try {
     const fileNames = await readdirAsync(dirPath, 'utf8');
@@ -122,10 +116,8 @@ async function updateFile(dir: Directory, file: string, content: any): Promise<v
     switch (err.code) {
       case 'ENOENT':
         throw new EntityNotFoundError(`${baseMessage} as it may not exist`, getEntityName(dir), file);
-      case 'EACCES':
-        throw new Error(`${baseMessage} due to lack of permission`);
       default:
-        throw new Error(baseMessage);
+        throw new FileOperationError(baseMessage, getEntityName(dir), file, 'update');
     }
   }
 }
@@ -133,7 +125,7 @@ async function updateFile(dir: Directory, file: string, content: any): Promise<v
 export const dataService: IDataService = {
   create: createFile,
   delete: deleteFile,
+  list: listDirectory,
   read: readFile,
-  readAll: readDirectory,
   update: updateFile,
 };

@@ -1,6 +1,7 @@
 import { join } from 'path';
 
 interface IEnvironmentConfig {
+  checkInterval: number;
   dataDir: string;
   envName: string;
   hashingSecret: string;
@@ -22,6 +23,7 @@ interface ITwilioConfig {
 const environments: { [key: string]: IEnvironmentConfig } = {};
 
 const baseConfig: Partial<IEnvironmentConfig> = {
+  checkInterval: 1000 * 60,
   dataDir: join(__dirname, '/../.data'),
   hashingSecret: 's3cr37',
   maxChecks: 5,

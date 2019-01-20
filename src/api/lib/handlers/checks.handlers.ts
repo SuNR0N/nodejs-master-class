@@ -1,16 +1,17 @@
 import { environment } from '../../config/config';
 import {
-  CHECK_CREATION_FAILED,
-  CHECK_DELETION_FAILED,
   CHECK_OF_USER_DOES_NOT_EXIST,
-  CHECK_UPDATE_FAILED,
   ENTITY_DOES_NOT_EXIST,
+  ENTITY_OPERATION_FAILED,
   MAX_CHECKS_REACHED,
   MISSING_FIELDS_TO_UPDATE,
   MISSING_REQUIRED_FIELDS,
   UNKNOWN_ERROR,
 } from '../constants/messages';
-import { EntityNotFoundError } from '../errors';
+import {
+  EntityNotFoundError,
+  FileOperationError,
+} from '../errors';
 import { HTTPError } from '../errors/http-error';
 import { helpers } from '../helpers';
 import {
@@ -22,12 +23,13 @@ import {
   IToken,
   IUser,
 } from '../interfaces';
-import { authService } from '../services/auth.service';
+import { Directory } from '../models/directory';
+import { State } from '../models/state';
 import {
+  authService,
   dataService,
-  Directory,
-} from '../services/data.service';
-import { validatorService } from '../services/validator.service';
+  validatorService,
+} from '../services';
 import {
   checkIdSchema,
   createCheckSchema,
@@ -107,8 +109,10 @@ async function updateCheck(requestData: IRequestData<Partial<ICheckDTO>>): Promi
           throw err;
         } else if (err instanceof EntityNotFoundError) {
           throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+        } else if (err instanceof FileOperationError) {
+          throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
         } else {
-          throw new HTTPError(500, CHECK_UPDATE_FAILED);
+          throw new HTTPError(500, UNKNOWN_ERROR);
         }
       }
     } else {
@@ -143,8 +147,10 @@ async function deleteCheck(requestData: IRequestData): Promise<IResponseData> {
         throw err;
       } else if (err instanceof EntityNotFoundError) {
         throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
-        throw new HTTPError(500, CHECK_DELETION_FAILED);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {
@@ -171,8 +177,10 @@ async function createCheck(requestData: IRequestData<ICheckRequestDTO>): Promise
         const checkId = helpers.createRandomString(20);
         const check: ICheckDTO = {
           id: checkId,
+          lastChecked: NaN,
           method,
           protocol,
+          state: State.DOWN,
           successCodes,
           timeoutSeconds,
           url,
@@ -194,8 +202,10 @@ async function createCheck(requestData: IRequestData<ICheckRequestDTO>): Promise
         throw err;
       } else if (err instanceof EntityNotFoundError) {
         throw new HTTPError(403);
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
-        throw new HTTPError(500, CHECK_CREATION_FAILED);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {

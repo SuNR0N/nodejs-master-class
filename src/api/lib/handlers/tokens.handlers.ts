@@ -1,16 +1,17 @@
 import { environment } from '../../config/config';
 import {
   ENTITY_DOES_NOT_EXIST,
+  ENTITY_OPERATION_FAILED,
   MISSING_OR_INVALID_FIELDS,
   MISSING_REQUIRED_FIELDS,
   PASSWORD_MISMATCH,
   TOKEN_CANNOT_BE_EXTENDED,
-  TOKEN_CREATION_FAILED,
-  TOKEN_DELETION_FAILED,
-  TOKEN_UPDATE_FAILED,
   UNKNOWN_ERROR,
 } from '../constants/messages';
-import { EntityNotFoundError } from '../errors';
+import {
+  EntityNotFoundError,
+  FileOperationError,
+} from '../errors';
 import { HTTPError } from '../errors/http-error';
 import { helpers } from '../helpers';
 import {
@@ -22,11 +23,11 @@ import {
   ITokenUpdateDTO,
   IUser,
 } from '../interfaces';
+import { Directory } from '../models/directory';
 import {
   dataService,
-  Directory,
-} from '../services/data.service';
-import { validatorService } from '../services/validator.service';
+  validatorService,
+} from '../services';
 import {
   createTokenSchema,
   tokenIdSchema,
@@ -96,8 +97,10 @@ async function updateToken(requestData: IRequestData<ITokenUpdateDTO>): Promise<
         throw err;
       } else if (err instanceof EntityNotFoundError) {
         throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
-        throw new HTTPError(500, TOKEN_UPDATE_FAILED);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {
@@ -118,8 +121,10 @@ async function deleteToken(requestData: IRequestData): Promise<IResponseData> {
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
         throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
-        throw new HTTPError(500, TOKEN_DELETION_FAILED);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {
@@ -158,8 +163,10 @@ async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise
         throw err;
       } else if (err instanceof EntityNotFoundError) {
         throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+      } else if (err instanceof FileOperationError) {
+        throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
-        throw new HTTPError(500, TOKEN_CREATION_FAILED);
+        throw new HTTPError(500, UNKNOWN_ERROR);
       }
     }
   } else {
