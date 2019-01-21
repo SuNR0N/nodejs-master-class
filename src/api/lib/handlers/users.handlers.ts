@@ -2,7 +2,7 @@ import {
   ENTITY_DOES_NOT_EXIST,
   ENTITY_OPERATION_FAILED,
   MISSING_FIELDS_TO_UPDATE,
-  MISSING_REQUIRED_FIELDS,
+  MISSING_OR_INVALID_FIELDS,
   PASSWORD_HASH_FAILED,
   UNKNOWN_ERROR,
   USER_ALREADY_EXISTS,
@@ -46,7 +46,7 @@ const usersRouteRegExp = /^users\/(?<id>\d*)(?:\/\w+)*$/;
 async function getUser(requestData: IRequestData): Promise<IResponseData<Partial<IUserDTO>>> {
   const usersRouteRegExpExec = usersRouteRegExp.exec(requestData.trimmedPath);
   const id = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id;
-  const { phone } = validatorService.validate({ phone: id }, userIdSchema);
+  const { id: phone } = validatorService.validate({ id }, userIdSchema);
 
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
@@ -67,7 +67,7 @@ async function getUser(requestData: IRequestData): Promise<IResponseData<Partial
       }
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -99,7 +99,14 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
           user.hashedPassword = helpers.hash(password) as string;
         }
         await dataService.update(Directory.Users, String(phone), user);
-        return { statusCode: 200 };
+        const {
+          hashedPassword,
+          ...updatedUser
+        } = user;
+        return {
+          payload: updatedUser,
+          statusCode: 200,
+        };
       } catch (err) {
         if (err instanceof EntityNotFoundError) {
           throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
@@ -113,14 +120,15 @@ async function updateUser(requestData: IRequestData<Partial<IUserDTO>>): Promise
       throw new HTTPError(400, MISSING_FIELDS_TO_UPDATE);
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
 async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
   const usersRouteRegExpExec = usersRouteRegExp.exec(requestData.trimmedPath);
   const id = usersRouteRegExpExec && usersRouteRegExpExec.groups && usersRouteRegExpExec.groups.id;
-  const { phone } = validatorService.validate({ phone: id }, userIdSchema);
+  const { id: phone } = validatorService.validate({ id }, userIdSchema);
+
   if (phone) {
     await authService.checkAuthenticated(requestData.headers, phone);
     try {
@@ -147,7 +155,7 @@ async function deleteUser(requestData: IRequestData): Promise<IResponseData> {
       }
     }
   } else {
-    throw new HTTPError(400, MISSING_REQUIRED_FIELDS);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -179,7 +187,11 @@ async function createUser(requestData: IRequestData<IUserDTO>): Promise<IRespons
         };
         try {
           await dataService.create(Directory.Users, phone, user);
-          return { statusCode: 201 };
+          delete user.hashedPassword;
+          return {
+            payload: user,
+            statusCode: 201,
+          };
         } catch (err) {
           if (err instanceof FileOperationError) {
             throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
@@ -192,7 +204,7 @@ async function createUser(requestData: IRequestData<IUserDTO>): Promise<IRespons
       }
     }
   } else {
-    throw new HTTPError(400, MISSING_REQUIRED_FIELDS);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 

@@ -5,7 +5,7 @@ import {
   ENTITY_OPERATION_FAILED,
   MAX_CHECKS_REACHED,
   MISSING_FIELDS_TO_UPDATE,
-  MISSING_REQUIRED_FIELDS,
+  MISSING_OR_INVALID_FIELDS,
   UNKNOWN_ERROR,
 } from '../constants/messages';
 import {
@@ -70,7 +70,7 @@ async function getCheck(requestData: IRequestData): Promise<IResponseData<ICheck
       }
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -119,7 +119,7 @@ async function updateCheck(requestData: IRequestData<Partial<ICheckDTO>>): Promi
       throw new HTTPError(400, MISSING_FIELDS_TO_UPDATE);
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -154,7 +154,7 @@ async function deleteCheck(requestData: IRequestData): Promise<IResponseData> {
       }
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -209,7 +209,7 @@ async function createCheck(requestData: IRequestData<ICheckRequestDTO>): Promise
       }
     }
   } else {
-    throw new HTTPError(400, MISSING_REQUIRED_FIELDS);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 

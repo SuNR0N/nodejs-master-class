@@ -3,8 +3,6 @@ import {
   ENTITY_DOES_NOT_EXIST,
   ENTITY_OPERATION_FAILED,
   MISSING_OR_INVALID_FIELDS,
-  MISSING_REQUIRED_FIELDS,
-  PASSWORD_MISMATCH,
   TOKEN_CANNOT_BE_EXTENDED,
   UNKNOWN_ERROR,
 } from '../constants/messages';
@@ -64,7 +62,7 @@ async function getToken(requestData: IRequestData): Promise<IResponseData<IToken
       }
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -128,7 +126,7 @@ async function deleteToken(requestData: IRequestData): Promise<IResponseData> {
       }
     }
   } else {
-    throw new HTTPError(501);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 
@@ -156,13 +154,13 @@ async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise
           statusCode: 201,
         };
       } else {
-        throw new HTTPError(400, PASSWORD_MISMATCH);
+        throw new HTTPError(401);
       }
     } catch (err) {
       if (err instanceof HTTPError) {
         throw err;
       } else if (err instanceof EntityNotFoundError) {
-        throw new HTTPError(404, ENTITY_DOES_NOT_EXIST(err));
+        throw new HTTPError(401);
       } else if (err instanceof FileOperationError) {
         throw new HTTPError(500, ENTITY_OPERATION_FAILED(err));
       } else {
@@ -170,7 +168,7 @@ async function createToken(requestData: IRequestData<ITokenRequestDTO>): Promise
       }
     }
   } else {
-    throw new HTTPError(400, MISSING_REQUIRED_FIELDS);
+    throw new HTTPError(400, MISSING_OR_INVALID_FIELDS);
   }
 }
 

@@ -8,38 +8,26 @@ export const tokenIdSchema: IValidationSchema = {
 };
 export const createTokenSchema: IValidationSchema = {
   password: validators.minLength(1),
-  phone: [
-    validators.minLength(10),
-    validators.maxLength(15),
-  ],
+  phone: validators.isMatch(/^\d{10,15}$/),
 };
 export const updateTokenSchema: IValidationSchema = {
   extends: validators.isBoolean(true),
   id: validators.hasLength(20),
 };
 export const userIdSchema: IValidationSchema = {
-  id: [
-    validators.minLength(10),
-    validators.maxLength(15),
-  ],
+  id: validators.isMatch(/^\d{10,15}$/),
 };
 export const updateUserSchema: IValidationSchema = {
   firstName: validators.minLength(1),
   lastName: validators.minLength(1),
   password: validators.minLength(1),
-  phone: [
-    validators.minLength(10),
-    validators.maxLength(15),
-  ],
+  phone: validators.isMatch(/^\d{10,15}$/),
 };
 export const createUserSchema: IValidationSchema = {
   firstName: validators.minLength(1),
   lastName: validators.minLength(1),
   password: validators.minLength(1),
-  phone: [
-    validators.minLength(10),
-    validators.maxLength(15),
-  ],
+  phone: validators.isMatch(/^\d{10,15}$/),
   tosAgreement: validators.isBoolean(true),
 };
 export const checkIdSchema: IValidationSchema = {

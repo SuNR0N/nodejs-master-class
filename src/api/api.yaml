@@ -1,0 +1,1182 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: API
+  license:
+    name: MIT
+servers:
+  - url: "{protocol}://localhost:{port}"
+    description: API Server
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: http
+      port:
+        enum:
+          - '3000'
+          - '3001'
+          - '5000'
+          - '5001'
+        default: '3000'
+paths:
+  /ping:
+    get:
+      summary: Ping
+      operationId: ping
+      tags:
+        - ping
+      responses:
+        '200':
+          description: OK
+  /users:
+    post:
+      summary: Create user
+      description: Creates a new user in the date store. Duplicate phone numbers are not allowed
+      operationId: createUser
+      requestBody:
+        description: User to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+            examples:
+              NewUserRequestExample:
+                $ref: '#/components/examples/NewUserRequestExample'
+      tags:
+        - users
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                NewUserExample:
+                  $ref: '#/components/examples/NewUserExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UserAlreadyExistsExample:
+                  $ref: '#/components/examples/UserAlreadyExistsExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                PasswordHashFailedExample:
+                  $ref: '#/components/examples/PasswordHashFailedExample'
+                CouldNotCreateUserExample:
+                  $ref: '#/components/examples/CouldNotCreateUserExample'
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+  /users/{id}:
+    get:
+      summary: Get user
+      description: Returns the specified user
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to fetch
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserPhone'
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+      tags:
+        - users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                UserExample:
+                  $ref: '#/components/examples/UserExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UserNotFoundExample:
+                  $ref: '#/components/examples/UserNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+    patch:
+      summary: Update user
+      description: Updates the properties of the specified user
+      operationId: updateUser
+      requestBody:
+        description: Properties of the user to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+            examples:
+              UserUpdateRequestExample:
+                $ref: '#/components/examples/UserUpdateRequestExample'
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to update
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserPhone'
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+      tags:
+        - users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                UserExample:
+                  $ref: '#/components/examples/UserExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+                MissingFieldsToUpdateExample:
+                  $ref: '#/components/examples/MissingFieldsToUpdateExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UserNotFoundExample:
+                  $ref: '#/components/examples/UserNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotUpdateUserExample:
+                  $ref: '#/components/examples/CouldNotUpdateUserExample'
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+    delete:
+      summary: Delete user
+      description: Deletes the user with the specified id and their associated checks and tokens
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to update
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserPhone'
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+      tags:
+        - users
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UserNotFoundExample:
+                  $ref: '#/components/examples/UserNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotDeleteUserExample:
+                  $ref: '#/components/examples/CouldNotDeleteUserExample'
+                CouldNotDeleteCheckExample:
+                  $ref: '#/components/examples/CouldNotDeleteCheckExample'
+                CouldNotDeleteTokenExample:
+                  $ref: '#/components/examples/CouldNotDeleteTokenExample'
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+  /tokens:
+    post:
+      summary: Create token
+      description: Creates an access token for the specified user
+      operationId: createToken
+      requestBody:
+        description: Credentials of the given user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+            examples:
+              TokenRequestExample:
+                $ref: '#/components/examples/TokenRequestExample'
+      tags:
+        - tokens
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+              examples:
+                TokenExample:
+                  $ref: '#/components/examples/TokenExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotCreateTokenExample:
+                  $ref: '#/components/examples/CouldNotCreateTokenExample'
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+  /tokens/{id}:
+    get:
+      summary: Get token
+      description: Returns the specified token
+      operationId: getToken
+      parameters:
+        - name: id
+          in: path
+          description: ID of token to fetch
+          required: true
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+      tags:
+        - tokens
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+              examples:
+                TokenExample:
+                  $ref: '#/components/examples/TokenExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                TokenNotFoundExample:
+                  $ref: '#/components/examples/TokenNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadTokenExample:
+                  $ref: '#/components/examples/CouldNotReadTokenExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+    put:
+      summary: Update token
+      description: Extends the validity of the token by and hour if it is still valid
+      operationId: updateToken
+      requestBody:
+        description: Token update request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenUpdateRequest'
+            examples:
+              TokenUpdateRequestExample:
+                $ref: '#/components/examples/TokenUpdateRequestExample'
+      tags:
+        - tokens
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+              examples:
+                TokenExample:
+                  $ref: '#/components/examples/TokenExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+                TokenCannotBeExtendedExample:
+                  $ref: '#/components/examples/TokenCannotBeExtendedExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                TokenNotFoundExample:
+                  $ref: '#/components/examples/TokenNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadTokenExample:
+                  $ref: '#/components/examples/CouldNotReadTokenExample'
+                CouldNotUpdateTokenExample:
+                  $ref: '#/components/examples/CouldNotUpdateTokenExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+    delete:
+      summary: Delete token
+      description: Deletes the token with the specified id
+      operationId: deleteToken
+      parameters:
+        - name: id
+          in: path
+          description: ID of token to delete
+          required: true
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+      tags:
+        - tokens
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                TokenNotFoundExample:
+                  $ref: '#/components/examples/TokenNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadTokenExample:
+                  $ref: '#/components/examples/CouldNotReadTokenExample'
+                CouldNotDeleteTokenExample:
+                  $ref: '#/components/examples/CouldNotDeleteTokenExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+  /checks:
+    post:
+      summary: Create check
+      description: Creates a check against the provided URL for the current user
+      operationId: createCheck
+      requestBody:
+        description: Check to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCheck'
+            examples:
+              NewCheckRequestExample:
+                $ref: '#/components/examples/NewCheckRequestExample'
+      parameters:
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+      tags:
+        - checks
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Check'
+              examples:
+                CheckExample:
+                  $ref: '#/components/examples/NewCheckExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MaxChecksReachedExample:
+                  $ref: '#/components/examples/MaxChecksReachedExample'
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadTokenExample:
+                  $ref: '#/components/examples/CouldNotReadTokenExample'
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                CouldNotCreateCheckExample:
+                  $ref: '#/components/examples/CouldNotCreateCheckExample'
+                CouldNotUpdateUserExample:
+                  $ref: '#/components/examples/CouldNotUpdateUserExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+  /checks/{id}:
+    get:
+      summary: Get check
+      description: Returns the check with the specified id
+      operationId: getCheck
+      parameters:
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+        - name: id
+          in: path
+          description: ID of check to feth
+          required: true
+          schema:
+            $ref: '#/components/schemas/CheckID'
+      tags:
+        - checks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Check'
+              examples:
+                CheckExample:
+                  $ref: '#/components/examples/CheckExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CheckNotFoundExample:
+                  $ref: '#/components/examples/CheckNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadCheckExample:
+                  $ref: '#/components/examples/CouldNotReadCheckExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+    patch:
+      summary: Update check
+      description: Updates the properties of the check with the specified id
+      operationId: updateCheck
+      requestBody:
+        description: Properties of the check to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckUpdateRequest'
+            examples:
+              CheckUpdateRequestExample:
+                $ref: '#/components/examples/CheckUpdateRequestExample'
+      parameters:
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+        - name: id
+          in: path
+          description: ID of check to update
+          required: true
+          schema:
+            $ref: '#/components/schemas/CheckID'
+      tags:
+        - checks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Check'
+              examples:
+                CheckExample:
+                  $ref: '#/components/examples/CheckExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+                MissingFieldsToUpdateExample:
+                  $ref: '#/components/examples/MissingFieldsToUpdateExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CheckNotFoundExample:
+                  $ref: '#/components/examples/CheckNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadCheckExample:
+                  $ref: '#/components/examples/CouldNotReadCheckExample'
+                CouldNotUpdateCheckExample:
+                  $ref: '#/components/examples/CouldNotUpdateCheckExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+    delete:
+      summary: Delete check
+      description: Deletes the check with the specified id and its association with the related user
+      operationId: deleteCheck
+      parameters:
+        - in: header
+          name: token
+          schema:
+            $ref: '#/components/schemas/TokenValue'
+          required: true
+        - name: id
+          in: path
+          description: ID of check to delete
+          required: true
+          schema:
+            $ref: '#/components/schemas/CheckID'
+      tags:
+        - checks
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                MissingOrInvalidFieldsExample:
+                  $ref: '#/components/examples/MissingOrInvalidFieldsExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                UnauthorizedExample:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                ForbiddenExample:
+                  $ref: '#/components/examples/ForbiddenExample'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CheckNotFoundExample:
+                  $ref: '#/components/examples/CheckNotFoundExample'
+                UserNotFoundExample:
+                  $ref: '#/components/examples/UserNotFoundExample'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+              examples:
+                CouldNotReadCheckExample:
+                  $ref: '#/components/examples/CouldNotReadCheckExample'
+                CouldNotDeleteCheckExample:
+                  $ref: '#/components/examples/CouldNotDeleteCheckExample'
+                CouldNotReadUserExample:
+                  $ref: '#/components/examples/CouldNotReadUserExample'
+                CouldNotUpdateUserExample:
+                  $ref: '#/components/examples/CouldNotUpdateUserExample'
+                CheckOfUserDoesNotExistExample:
+                  $ref: '#/components/examples/CheckOfUserDoesNotExistExample'
+                UnknownErrorExample:
+                  $ref: '#/components/examples/UnknownErrorExample'
+components:
+  schemas:
+    BaseCheck:
+      properties:
+        method:
+          type: string
+          enum:
+            - GET
+            - DELETE
+            - PATCH
+            - POST
+            - PUT
+        protocol:
+          type: string
+          enum:
+            - http
+            - https
+        successCodes:
+          type: array
+          items:
+            type: number
+        timeoutSeconds:
+          type: integer
+          minimum: 1
+          maximum: 5
+        url:
+          type: string
+          format: uri
+    BaseUser:
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        phone:
+          $ref: '#/components/schemas/UserPhone'
+        tosAgreement:
+          type: boolean
+    Check:
+      allOf:
+        - $ref: '#/components/schemas/BaseCheck'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/CheckID'
+            lastChecked:
+              type: number
+              format: timestamp
+            state:
+              type: string
+              enum:
+                - UP
+                - DOWN
+            userPhone:
+              $ref: '#/components/schemas/UserPhone'
+      required:
+        - id
+        - lastChecked
+        - state
+        - userPhone
+        - method
+        - protocol
+        - successCodes
+        - timeoutSeconds
+        - url
+    CheckID:
+      type: string
+      pattern: '^[0-9a-z]{20}$'
+    CheckUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseCheck'
+    HTTPError:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    NewCheck:
+      allOf:
+        - $ref: '#/components/schemas/BaseCheck'
+      required:
+        - method
+        - protocol
+        - successCodes
+        - timeoutSeconds
+        - url   
+    NewUser:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            password:
+              type: string
+              minLength: 1
+      required:
+            - firstName
+            - lastName
+            - phone
+            - tosAgreement
+            - password
+    Token:
+      required:
+        - expires
+        - id
+        - phone
+      properties:
+        expires:
+          type: number
+          format: timestamp
+        id:
+          $ref: '#/components/schemas/TokenValue'
+        phone:
+          $ref: '#/components/schemas/UserPhone'
+    TokenRequest:
+      required:
+        - phone
+        - password
+      properties:
+        phone:
+          $ref: '#/components/schemas/UserPhone'
+        password:
+          type: string
+          minLength: 1
+    TokenUpdateRequest:
+      required:
+        - extend
+      properties:
+        extend:
+          type: boolean
+    TokenValue:
+      type: string
+      pattern: '^[0-9a-z]{20}$'
+    User:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            checks:
+              type: array
+              items:
+                type: string
+                pattern: '^[0-9a-z]{20}$'
+      required:
+        - firstName
+        - lastName
+        - phone
+        - tosAgreement
+    UserPhone:
+      type: string
+      pattern: '^\d{10,15}$'
+    UserUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+  examples:
+    CheckExample:
+      value:
+        id: 6rd14a4kyie4pjxlgxgq
+        lastChecked: 1548023618804
+        method: GET
+        protocol: http
+        state: UP
+        successCodes:
+          - 200
+          - 201
+        timeoutSeconds: 3
+        url: www.google.com
+        userPhone: '1234567890123'
+    CheckNotFoundExample:
+      value:
+        message: Entity 'Check' with ID = 6rd14a4kyie4pjxlgxgq does not exist
+    CheckOfUserDoesNotExistExample:
+      value:
+        message: Could not find the check on the user object
+    CheckUpdateRequestExample:
+      value:
+        protocol: https
+        timeoutSeconds: 1
+    CouldNotCreateCheckExample:
+      value:
+        message: Could not create 'Check' with ID = 6rd14a4kyie4pjxlgxgq
+    CouldNotCreateTokenExample:
+      value:
+        message: Could not create 'Token' with ID = j8xh5knx7khsfbl90ica
+    CouldNotCreateUserExample:
+      value:
+        message: Could not create 'User' with ID = 1234567890123
+    CouldNotDeleteCheckExample:
+      value:
+        message: Could not delete 'Check' with ID = 6rd14a4kyie4pjxlgxgq
+    CouldNotDeleteTokenExample:
+      value:
+        message: Could not delete 'Token' with ID = j8xh5knx7khsfbl90ica
+    CouldNotDeleteUserExample:
+      value:
+        message: Could not delete 'User' with ID = 1234567890123
+    CouldNotReadCheckExample:
+      value:
+        message: Could not read 'Check' with ID = 6rd14a4kyie4pjxlgxgq
+    CouldNotReadTokenExample:
+      value:
+        message: Could not read 'Token' with ID = j8xh5knx7khsfbl90ica
+    CouldNotReadUserExample:
+      value:
+        message: Could not read 'User' with ID = 1234567890123
+    CouldNotUpdateCheckExample:
+      value:
+        message: Could not update 'Check' with ID = 6rd14a4kyie4pjxlgxgq
+    CouldNotUpdateTokenExample:
+      value:
+        message: Could not update 'Token' with ID = j8xh5knx7khsfbl90ica
+    CouldNotUpdateUserExample:
+      value:
+        message: Could not update 'User' with ID = 1234567890123
+    ForbiddenExample:
+      value:
+        message: Forbidden
+    MaxChecksReachedExample:
+      value:
+        message: The user already has the maximum number of checks (5)
+    MissingFieldsToUpdateExample:
+      value:
+        message: Missing fields to update
+    MissingOrInvalidFieldsExample:
+      value:
+        message: Missing required field(s) or field(s) are invalid
+    MissingRequiredFieldsExample:
+      value:
+        message: Missing required fields
+    NewCheckExample:
+      value:
+        id: 6rd14a4kyie4pjxlgxgq
+        lastChecked: null
+        method: GET
+        protocol: http
+        state: DOWN
+        successCodes:
+          - 200
+          - 201
+        timeoutSeconds: 3
+        url: www.google.com
+        userPhone: '1234567890123'
+    NewCheckRequestExample:
+      value:
+        method: GET
+        protocol: http
+        successCodes:
+          - 200
+          - 201
+        timeoutSeconds: 3
+        url: www.google.com
+    NewUserExample:
+      value:
+        firstName: John
+        lastName: Doe
+        phone: '1234567890123'
+        tosAgreement: true
+    NewUserRequestExample:
+      value:
+        firstName: John
+        lastName: Doe
+        phone: '1234567890123'
+        password: p455w0rd
+        tosAgreement: true
+    PasswordHashFailedExample:
+      value:
+        message: Could not hash the user's password
+    PasswordMismatchExample:
+      value:
+        message: Password did not match the specified user's store password
+    TokenCannotBeExtendedExample:
+      value:
+        message: The token has already expired and cannot be extended
+    TokenExample:
+      value:
+        expires: 1548021680046
+        id: wu484xzb5lgdc6bfpsmx
+        phone: '0123456789'
+    TokenNotFoundExample:
+      value:
+        message: Entity 'Token' with ID = j8xh5knx7khsfbl90ica does not exist
+    TokenRequestExample:
+      value:
+        phone: '1234567890123'
+        password: p455w0rd
+    TokenUpdateRequestExample:
+      value:
+        extend: true
+    UnauthorizedExample:
+      value:
+        message: Unauthorized
+    UnknownErrorExample:
+      value:
+        message: An unknown error occurred
+    UserAlreadyExistsExample:
+      value:
+        message: A user with that phone number already exists
+    UserExample:
+      value:
+        firstName: John
+        lastName: Doe
+        phone: '1234567890123'
+        tosAgreement: true
+        checks:
+          - 8dfyviuir6im7hd7qbyy
+    UserNotFoundExample:
+      value:
+        message: Entity 'User' with ID = 1234567890123 does not exist
+    UserUpdateRequestExample:
+      value:
+        firstName: Jane
