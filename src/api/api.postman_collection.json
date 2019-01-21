@@ -1,443 +1,443 @@
 {
-	"info": {
-		"_postman_id": "aece7627-54e2-4a9f-93a0-7916774b8746",
-		"name": "The Node.js Master Class",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Users",
-			"item": [
-				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"firstName\": \"John\",\n\t\"lastName\": \"Doe\",\n\t\"password\": \"foobar\",\n\t\"phone\": \"0123456789\",\n\t\"tosAgreement\": true\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/users",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/users/0123456789",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"users",
-								"0123456789"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"firstName\": \"Jane\",\n\t\"lastName\": \"Doe\",\n\t\"password\": \"foobar\",\n\t\"phone\": \"0123456789\",\n\t\"tosAgreement\": true\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/users/0123456789",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"users",
-								"0123456789"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/users/0123456789",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"users",
-								"0123456789"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Tokens",
-			"item": [
-				{
-					"name": "Create Token",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"phone\": \"0123456789\",\n\t\"password\": \"foobar\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/tokens",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"tokens"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Token",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/tokens/{{token}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"tokens",
-								"{{token}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Token",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"extend\": true\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/tokens/{{token}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"tokens",
-								"{{token}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Token",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/tokens/{{token}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"tokens",
-								"{{token}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Checks",
-			"item": [
-				{
-					"name": "Create Check",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"method\": \"GET\",\n\t\"protocol\": \"http\",\n\t\"successCodes\": [200],\n\t\"timeoutSeconds\": 3,\n\t\"url\": \"www.google.com\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/checks",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"checks"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Check",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/checks/1son5uud712hpebx5oot",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"checks",
-								"1son5uud712hpebx5oot"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Check",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"method\": \"DELETE\",\n\t\"protocol\": \"http\",\n\t\"successCodes\": [204],\n\t\"timeoutSeconds\": 3,\n\t\"url\": \"google.com\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/checks/1son5uud712hpebx5oot",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"checks",
-								"1son5uud712hpebx5oot"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Check",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/checks/1son5uud712hpebx5oot",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"checks",
-								"1son5uud712hpebx5oot"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Ping",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "http://localhost:3000/ping",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"ping"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "fb13edfb-1a56-4727-be6c-9d947df9006f",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "c8da75eb-5929-4fd2-b261-bc26fa79557a",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"id": "b2d9c58f-b938-4b0f-a236-854451d593f7",
-			"key": "token",
-			"value": "",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "aece7627-54e2-4a9f-93a0-7916774b8746",
+    "name": "The Node.js Master Class - API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"firstName\": \"John\",\n\t\"lastName\": \"Doe\",\n\t\"password\": \"foobar\",\n\t\"phone\": \"0123456789\",\n\t\"tosAgreement\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/0123456789",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "0123456789"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"firstName\": \"Jane\",\n\t\"lastName\": \"Doe\",\n\t\"password\": \"foobar\",\n\t\"phone\": \"0123456789\",\n\t\"tosAgreement\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/0123456789",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "0123456789"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/0123456789",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "0123456789"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tokens",
+      "item": [
+        {
+          "name": "Create Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"phone\": \"0123456789\",\n\t\"password\": \"foobar\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/tokens",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tokens"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/tokens/{{token}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tokens",
+                "{{token}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Token",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"extend\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/tokens/{{token}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tokens",
+                "{{token}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Token",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/tokens/{{token}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tokens",
+                "{{token}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Checks",
+      "item": [
+        {
+          "name": "Create Check",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"method\": \"GET\",\n\t\"protocol\": \"http\",\n\t\"successCodes\": [200],\n\t\"timeoutSeconds\": 3,\n\t\"url\": \"www.google.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/checks",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "checks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/checks/1son5uud712hpebx5oot",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "checks",
+                "1son5uud712hpebx5oot"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Check",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"method\": \"DELETE\",\n\t\"protocol\": \"http\",\n\t\"successCodes\": [204],\n\t\"timeoutSeconds\": 3,\n\t\"url\": \"google.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/checks/1son5uud712hpebx5oot",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "checks",
+                "1son5uud712hpebx5oot"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Check",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/checks/1son5uud712hpebx5oot",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "checks",
+                "1son5uud712hpebx5oot"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:3000/ping",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "ping"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "fb13edfb-1a56-4727-be6c-9d947df9006f",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "c8da75eb-5929-4fd2-b261-bc26fa79557a",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "b2d9c58f-b938-4b0f-a236-854451d593f7",
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
 }

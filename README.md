@@ -16,8 +16,8 @@ Table of Contents
   * [Lint API](#lint-api)
   * [Debug API](#debug-api)
 * [Homeworks](#homeworks)
-  * [Homework Assignment #1](#homework-assignment-#1)
-  * [Homework Assignment #2](#homework-assignment-#2)
+  * [Homework Assignment #1](#homework-assignment-1)
+  * [Homework Assignment #2](#homework-assignment-2)
 * [Resources](#resources)
 
 ## Prerequisites
